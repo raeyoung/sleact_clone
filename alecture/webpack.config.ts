@@ -11,6 +11,7 @@ const config: webpack.Configuration = {
   mode: isDevelopment ? 'development' : 'production',
   devtool: !isDevelopment ? 'hidden-source-map' : 'eval',
   resolve: {
+    // babel 이 처리할 확장자 목록
     extensions: ['.js', '.jsx', '.ts', '.tsx', '.json'],
     alias: {
       '@hooks': path.resolve(__dirname, 'hooks'),
@@ -41,14 +42,6 @@ const config: webpack.Configuration = {
             '@babel/preset-react',
             '@babel/preset-typescript',
           ],
-          env: {
-            development: {
-              plugins: [['@emotion', { sourceMap: true }], require.resolve('react-refresh/babel')],
-            },
-            production: {
-              plugins: ['@emotion'],
-            },
-          },
         },
         exclude: path.join(__dirname, 'node_modules'),
       },
@@ -85,11 +78,14 @@ const config: webpack.Configuration = {
   },
 };
 
+// 개발환경 플러그인
 if (isDevelopment && config.plugins) {
   config.plugins.push(new webpack.HotModuleReplacementPlugin());
   config.plugins.push(new ReactRefreshWebpackPlugin());
   config.plugins.push(new BundleAnalyzerPlugin({ analyzerMode: 'server', openAnalyzer: true }));
 }
+
+// 배포환경 플러그인 
 if (!isDevelopment && config.plugins) {
   config.plugins.push(new webpack.LoaderOptionsPlugin({ minimize: true }));
   config.plugins.push(new BundleAnalyzerPlugin({ analyzerMode: 'static' }));
